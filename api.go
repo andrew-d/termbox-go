@@ -81,6 +81,7 @@ func Init() error {
 	back_buffer.clear()
 	front_buffer.clear()
 
+	quit = make(chan struct{})
 	go func() {
 		buf := make([]byte, 128)
 		for {
@@ -112,7 +113,7 @@ func Init() error {
 // Finalizes termbox library, should be called after successful initialization
 // when termbox's functionality isn't required anymore.
 func Close() {
-	quit <- 1
+	close(quit)
 	out.WriteString(funcs[t_show_cursor])
 	out.WriteString(funcs[t_sgr0])
 	out.WriteString(funcs[t_clear_screen])
@@ -256,6 +257,9 @@ func PollEvent() Event {
 		case <-sigwinch:
 			event.Type = EventResize
 			event.Width, event.Height = get_term_size(out.Fd())
+			return event
+		case <-quit:
+			event.Type = EventShutdown
 			return event
 		}
 	}

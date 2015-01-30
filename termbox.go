@@ -68,7 +68,7 @@ var (
 	outbuf       bytes.Buffer
 	sigwinch     = make(chan os.Signal, 1)
 	sigio        = make(chan os.Signal, 1)
-	quit         = make(chan int)
+	quit         = make(chan struct{})
 	input_comm   = make(chan input_event)
 	intbuf       = make([]byte, 0, 16)
 )
