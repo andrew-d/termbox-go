@@ -151,7 +151,12 @@ func CellBuffer() []Cell {
 
 // Wait for an event and return it. This is a blocking function call.
 func PollEvent() Event {
-	return <-input_comm
+	select {
+	case ev := <-input_comm:
+		return ev
+	case <-cancel_done_comm:
+		return Event{Type: EventShutdown}
+	}
 }
 
 // Returns the size of the internal back buffer (which is mostly the same as

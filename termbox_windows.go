@@ -348,7 +348,7 @@ var (
 	beg_i            = -1
 	input_comm       = make(chan Event)
 	cancel_comm      = make(chan bool, 1)
-	cancel_done_comm = make(chan bool)
+	cancel_done_comm = make(chan struct{})
 	alt_mode_esc     = false
 
 	// these ones just to prevent heap allocs at all costs
@@ -761,7 +761,7 @@ func input_event_producer() {
 
 		select {
 		case <-cancel_comm:
-			cancel_done_comm <- true
+			close(cancel_done_comm)
 			return
 		default:
 		}
